@@ -1,0 +1,6 @@
+[submodule "submodules/labelgs-rasterization"]
+	path = submodules/labelgs-rasterization
+	url = https://github.com/garrisonz/labelgs-rasterization
+[submodule "submodules/simple-knn"]
+	path = submodules/simple-knn
+	url = https://gitlab.inria.fr/bkerbl/simple-knn
