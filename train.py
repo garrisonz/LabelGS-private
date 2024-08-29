@@ -374,7 +374,7 @@ if __name__ == "__main__":
     parser.add_argument("--label", action="store_true", default=False)
     parser.add_argument("--occlude_flag", action="store_true", default=False)
     parser.add_argument("--gpf_flag", action="store_true", default=False)
-    parser.add_argument("--mask_version", type=int, required=True)
+    parser.add_argument("--mask_version", type=int, default=3)
     parser.add_argument('--start_label_iter', type=int, default=1000)
     parser.add_argument('--alpha_max_threshold', type=float, default=0.6)
     parser.add_argument('--mask_sample_number', type=int, default=10)
