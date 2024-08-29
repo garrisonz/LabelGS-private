@@ -20,10 +20,9 @@ loaded_iter = 30000
 
 for scene_name in scene_names:
 
-    if scene_name == "fern":
-        continue
+    scene_name = "garden"
 
-    cmd = f"python render_video.py -m output/{dataset_name}/{scene_name} --loaded_iter {loaded_iter}"
+    cmd = f"python -m preprocess.densify_views.render_video -m output/{dataset_name}/{scene_name} --loaded_iter {loaded_iter}"
     print(cmd)
     os.system(cmd)
-#    exit()
+    exit()

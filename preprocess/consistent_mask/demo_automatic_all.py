@@ -7,7 +7,7 @@ parser.add_argument("--dataset_name", type=str, required=True) # example 3d_ovs
 args = parser.parse_args()
 dataset_name = args.dataset_name
 
-project_path = "/home/zhangyupeng/w/3drecon/LangSplat"
+project_path = "/home/zhangyupeng/w/3drecon/LabelGS"
 dataset_path = f"{project_path}/dataset/{dataset_name}"
 print(dataset_path)
 
@@ -22,10 +22,16 @@ print("scene_names:", scene_names)
 
 for scene_name in scene_names:
 
+    scene_name = "garden"
+
     img_path = f"{project_path}/output/{dataset_name}/{scene_name}/train/_None_30000/renders"
+    #img_path = f"{project_path}/dataset/{dataset_name}/{scene_name}/images"
     mask_root = f"{dataset_path}/{scene_name}/mask/video_mask_auto/"
 
-    cmd = f"python demo/demo_automatic.py --chunk_size 4 --img_path {img_path} --amp --temporal_setting semionline --size 480 --output {mask_root}"
+    if not os.path.exists(mask_root):
+        os.makedirs(mask_root)
+
+    cmd = f"python preprocess/consistent_mask/demo_automatic.py --chunk_size 4 --img_path {img_path} --amp --temporal_setting semionline --size 480 --output {mask_root}"
 
     print(cmd)
     os.system(cmd) 

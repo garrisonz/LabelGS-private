@@ -22,7 +22,6 @@ from argparse import ArgumentParser
 from arguments import ModelParams, PipelineParams, get_combined_args
 from gaussian_renderer import GaussianModel
 from utils.eval_tools import interpolate_views
-import utils.train_utils as train_utils
 
 def render_set(model_path, source_path, name, iteration, views, gaussians, pipeline, background, args, texts, label_id):
 
