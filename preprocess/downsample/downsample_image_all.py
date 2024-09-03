@@ -3,8 +3,10 @@ import os
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset_name', type=str, required=True) # "3d_ovs"
+parser.add_argument('--max_height', type=int, default=1080) # "3d_ovs"
 args = parser.parse_args()
 dataset_name = args.dataset_name
+max_height = args.max_height
 
 dataset_path = f"/home/zhangyupeng/w/3drecon/LabelGS/dataset/{dataset_name}"
 
@@ -20,11 +22,11 @@ print("scene_names:", scene_names)
 scene_names.sort()
 
 for scene_name in scene_names:
-    if scene_name == "bicycle":
-        continue
+    #if scene_name == "bicycle":
+    #    continue
 
     scene_path = f"{dataset_path}/{scene_name}"
     print("downscale: ", scene_path)
 
-    os.system(f"python preprocess/downsample/downsample_image2.py --scene_path {scene_path}") 
+    os.system(f"python preprocess/downsample/downsample_image2.py --scene_path {scene_path} --max_height {max_height}") 
     #exit()

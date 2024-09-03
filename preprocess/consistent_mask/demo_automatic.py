@@ -6,6 +6,10 @@ import torch
 from torch.utils.data import DataLoader
 import numpy as np
 
+# set deva path as /home/zhangyupeng/deva
+import sys
+sys.path.append("/home/zhangyupeng/w/3drecon/Tracking-Anything-with-DEVA")
+
 from deva.inference.inference_core import DEVAInferenceCore
 from deva.inference.data.simple_video_reader import SimpleVideoReader, no_collate
 from deva.inference.result_utils import ResultSaver

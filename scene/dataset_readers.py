@@ -135,15 +135,15 @@ def readColmapCameras(cam_extrinsics, cam_intrinsics, images_folder, mask_folder
             if os.path.exists(mask_file):
                 mask = np.load(mask_file)
                 mask_list.append(mask)
-            else:
-                print("[Warning] mask_file not exists:", mask_file)
+            #else:
+            #    print("[Warning] mask_file not exists:", mask_file)
         elif rendering_gt_mapping == {}:
             mask_file = f"{mask_folder}/uni_mask/{image_name}.npy"
             if os.path.exists(mask_file):
                 mask = np.load(mask_file)
                 mask_list.append(mask)
-            else:
-                print("[Warning] mask_file not exists:", mask_file)
+            #else:
+            #    print("[Warning] mask_file not exists:", mask_file)
 
         occlude_mapping = {}
         occlude_mapping_file = f"{mask_folder}/occlude/occlude_mapping_{image_name}.json"

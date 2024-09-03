@@ -17,12 +17,12 @@ scene_names = os.listdir(dataset_path)
 if dataset_name == "lerf_ovs":
     scene_names = [scene_name for scene_name in scene_names if "label" != scene_name]
 
+scene_names = [scene_name for scene_name in scene_names if os.path.isdir(f"{dataset_path}/{scene_name}")]
+
 scene_names.sort()
 print("scene_names:", scene_names)
 
 for scene_name in scene_names:
-
-    scene_name = "garden"
 
     img_path = f"{project_path}/output/{dataset_name}/{scene_name}/train/_None_30000/renders"
     #img_path = f"{project_path}/dataset/{dataset_name}/{scene_name}/images"
@@ -35,4 +35,3 @@ for scene_name in scene_names:
 
     print(cmd)
     os.system(cmd) 
-    exit()

@@ -55,7 +55,11 @@ with open(rendering_gt_mapping_path, "r") as f:
 
 print(rendering_gt_mapping)
 
-for image_name, mask_name in rendering_gt_mapping.items():
+# for rendering_gt_mapping with tqdm 
+from tqdm import tqdm
+for image_name, mask_name in tqdm(rendering_gt_mapping.items()):
+
+#for image_name, mask_name in rendering_gt_mapping.items():
     # #image_name = image_file.split(".")[0]
     # print(image_name)
 
@@ -88,7 +92,7 @@ for image_name, mask_name in rendering_gt_mapping.items():
 
         # save label_region as image file
         save_label_region = label_region.astype(np.uint8) * 255
-        cv2.imwrite(f"{out_dir}/depth/{image_name}/label_region_{label}.png", save_label_region)
+        #cv2.imwrite(f"{out_dir}/depth/{image_name}/label_region_{label}.png", save_label_region)
 
         label_region = label_region.astype(np.uint8)
         erode_label_region = cv2.erode(label_region, np.ones((3, 3), np.uint8), iterations=1)
@@ -138,7 +142,7 @@ for image_name, mask_name in rendering_gt_mapping.items():
 
                 occlu_map = (label_map == label_out)
                 save_occlu_map = occlu_map.astype(np.uint8) * 255
-                cv2.imwrite(f"{out_dir}/depth/{image_name}/label_region_{label}_out_{label_out}_occlu.png", save_occlu_map)
+                #cv2.imwrite(f"{out_dir}/depth/{image_name}/label_region_{label}_out_{label_out}_occlu.png", save_occlu_map)
                 occlu_list.append(int(label_out))
 
         occlu_mapping[int(label)] = occlu_list

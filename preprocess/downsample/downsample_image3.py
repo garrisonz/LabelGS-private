@@ -5,13 +5,14 @@ import numpy as np
 # get scene_path from command line
 import argparse
 parser = argparse.ArgumentParser()
-parser.add_argument('--scene_path', type=str, required=True) # "dataset/3d_ovs/sofa"
-parser.add_argument('--max_height', type=int, default=1080) # "dataset/3d_ovs/sofa"
+parser.add_argument('--max_hight', type=int, default=540)
+parser.add_argument('--image_dir', type=str, required=True) # "dataset/3d_ovs/sofa"
+parser.add_argument('--output_dir', type=str, required=True) # "dataset/3d_ovs/sofa"
 
 args = parser.parse_args()
-scene_path = args.scene_path
-max_height = args.max_height
-print("scene_path:", scene_path)
+max_hight = args.max_hight
+image_dir = args.image_dir
+output_dir = args.output_dir
 
 def downsample_image(source_folder, output_folder, is_mask=False):
     img_dir = source_folder
@@ -31,8 +32,8 @@ def downsample_image(source_folder, output_folder, is_mask=False):
 
         image = img
         orig_w, orig_h = image.shape[1], image.shape[0]
-        if orig_h > max_height:
-            global_down = orig_h / max_height
+        if orig_h > max_hight:
+            global_down = orig_h / max_hight
         else:
             global_down = 1
         scale = float(global_down)
@@ -48,10 +49,4 @@ def downsample_image(source_folder, output_folder, is_mask=False):
         print(f"downsampled {img_name} to {output_folder} {img.shape}")
 
 
-origin_path = scene_path + "/images"
-bak_path = scene_path + "/images_input"
-if not os.path.exists(bak_path):
-    os.system(f"mv {origin_path} {bak_path}")
-    print(f"mv {origin_path} {bak_path}")
-
-downsample_image(scene_path + "/images_input", scene_path + "/images")
+downsample_image(image_dir, output_dir)

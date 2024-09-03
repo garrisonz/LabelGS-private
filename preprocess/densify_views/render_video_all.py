@@ -13,6 +13,7 @@ print(dataset_path)
 scene_names = os.listdir(dataset_path)
 if dataset_name == "lerf_ovs":
     scene_names = [scene_name for scene_name in scene_names if "label" != scene_name]
+scene_names = [scene_name for scene_name in scene_names if os.path.isdir(f"{dataset_path}/{scene_name}")]
 scene_names.sort()
 print("scene_names:", scene_names)
 
@@ -20,9 +21,9 @@ loaded_iter = 30000
 
 for scene_name in scene_names:
 
-    scene_name = "garden"
+    #scene_name = "garden"
 
     cmd = f"python -m preprocess.densify_views.render_video -m output/{dataset_name}/{scene_name} --loaded_iter {loaded_iter}"
     print(cmd)
     os.system(cmd)
-    exit()
+    #exit()

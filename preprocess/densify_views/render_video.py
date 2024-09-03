@@ -74,65 +74,6 @@ def render_set(model_path, source_path, name, iteration, views, gaussians, pipel
     print("rendering done", render_path)
     return render_path
 
-def restore_feature(gau: GaussianModel, source_path):
-    from torch.utils.data import DataLoader
-    from autoencoder.dataset import Decoder_dataset
-    from autoencoder.model import Autoencoder
-    
-    encoder_hidden_dims = [256, 128, 64, 32, 3]
-    decoder_hidden_dims = [16, 32, 64, 128, 256, 256, 512]
-    dataset_path = source_path
-    dataset_name = os.path.basename(dataset_path)
-    ckpt_path = f"autoencoder/ckpt/{dataset_name}/best_ckpt.pth"
-
-    print(gau.get_language_feature.shape) # torch.Size([726213, 3])
-    compressed_dataset = Decoder_dataset(gau.get_language_feature)
-    test_loader = DataLoader(
-        dataset=compressed_dataset, 
-        batch_size=1024 * 16,
-        shuffle=False, 
-        num_workers=32, 
-        drop_last=False   
-    )
-
-    checkpoint = torch.load(ckpt_path)
-    model = Autoencoder(encoder_hidden_dims, decoder_hidden_dims).to("cuda:0")
-    model.load_state_dict(checkpoint)
-    model.eval()
-
-    print("start decoding...")
-    for idx, feature in tqdm(enumerate(test_loader)):
-        data = feature.to("cuda:0")
-        with torch.no_grad():
-            outputs = model.decode(data).to("cpu").numpy()  
-
-        if idx == 0:
-            features = outputs
-        else:
-            features = np.concatenate([features, outputs], axis=0)
-    return features
-
-def encoder_text(texts):
-    import open_clip
-    clip_model_type: str = "ViT-B-16"
-    clip_model_pretrained: str = "laion2b_s34b_b88k"
-
-    model, _, _ = open_clip.create_model_and_transforms(
-        clip_model_type,  # e.g., ViT-B-16
-        pretrained=clip_model_pretrained,  # e.g., laion2b_s34b_b88k
-        precision="fp16",
-        )
-    model.to("cuda")
-    model.eval()
-
-    tokenizer = open_clip.get_tokenizer(clip_model_type)
-    with torch.no_grad():
-        print("texts:", texts)
-        tok_phrases = torch.cat([tokenizer(phrase) for phrase in texts]).to("cuda")
-        text_embeds = model.encode_text(tok_phrases)
-        text_embeds /= text_embeds.norm(dim=-1, keepdim=True)
-
-    return text_embeds
 
 def get_label_id(text_str, scene_path):
     import open_clip

@@ -21,7 +21,7 @@ scene_names.sort()
 print("scene_names:", scene_names)
 
 for scene_name in scene_names:
-    scene_name = "garden"
+    scene_name = "bonsai"
 
     img_path = f"{dataset_path}/{scene_name}/mask/video_mask_auto/Annotations"
     mask_root = f"{dataset_path}/{scene_name}/mask/video_mask_auto2"

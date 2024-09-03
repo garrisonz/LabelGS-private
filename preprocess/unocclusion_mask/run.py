@@ -6,6 +6,9 @@ import numpy as np
 import os
 import torch
 
+import sys
+sys.path.append("/home/zhangyupeng/w/3drecon/Depth-Anything-V2")
+
 from depth_anything_v2.dpt import DepthAnythingV2
 
 

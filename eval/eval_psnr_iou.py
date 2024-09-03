@@ -15,32 +15,6 @@ import logging
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 
-
-def extract_3d_object(gaussians, scene, eval_path, object_to_label, args, background):
-    object_name = "Pikachu"
-    test_cameras = scene.getTestCameras()
-    train_cameras = scene.getTrainCameras()
-    views = train_cameras + test_cameras
-    # sort views by image_name
-    views = sorted(views, key=lambda x: x.image_name)
-    # print image_name of all views
-    print("views: ", [view.image_name for view in views])
-    from utils.eval_tools import interpolate_views
-    views = interpolate_views(views)
-
-    pikachu_path = eval_path + "/" + object_name
-    os.makedirs(pikachu_path, exist_ok=True)
-    for idx, view in tqdm(enumerate(views), desc="Rendering progress"):
-
-        label_ids = object_to_label[object_name]
-        label_ids = torch.tensor(label_ids, dtype=torch.int32, device="cuda")
-        render_pkg = render(view, gaussians, pipeline, background, args, label_id=label_ids)
-        render_img = render_pkg["render"]
-        # idx to string with 5 digits padding with 0
-        idx = '{0:05d}'.format(idx)
-        torchvision.utils.save_image(render_img,  pikachu_path+f"/{idx}.png")
-
-
 def eval(dataset : ModelParams, pipeline : PipelineParams, args):
     dataset.eval = True
 
@@ -76,7 +50,7 @@ def eval(dataset : ModelParams, pipeline : PipelineParams, args):
         gaussians = GaussianModel(dataset.sh_degree)
         scene = Scene(dataset, gaussians, shuffle=False, mask_version=args.mask_version)
         checkpoint = os.path.join(args.model_path, f'chkpnt{args.loaded_iter}.pth')
-        (model_params, first_iter) = torch.load(checkpoint)
+        (model_params, _) = torch.load(checkpoint)
         gaussians.restore(model_params, args, mode='test')
 
         bg_color = [1,1,1] if dataset.white_background else [0, 0, 0]
@@ -87,33 +61,10 @@ def eval(dataset : ModelParams, pipeline : PipelineParams, args):
         view = [c for c in train_cameras if c.image_name == prompt_frame][0]
 
         render_pkg = render(view, gaussians, pipeline, background, args)
-        render_img = render_pkg["render"].cpu()
         alpha_id_map = render_pkg["alpha_id_map"].cpu()
-        torchvision.utils.save_image(render_img,  eval_path+f"/prompt{prompt_frame}.png")
 
-        gaussian_label = gaussians.label
         alpha_id_map = alpha_id_map.type(torch.long)
-        label_map = gaussian_label[alpha_id_map]
-
-        save_label_map = label_map.clone().type(torch.float32) / label_map.max()
-        torchvision.utils.save_image(save_label_map,  eval_path+f"/prompt{prompt_frame}_label_map.png")
-
-
-        uni_mask_map = view.mask_list[0]
-        label_ids = torch.unique( uni_mask_map).type(torch.long)
-        for label_id in label_ids:
-            if label_id == 0:
-                continue
-            label_map_label = label_map == label_id
-            save_label_map_label = label_map_label.clone().type(torch.float32) * 255
-            torchvision.utils.save_image(save_label_map_label,  eval_path+f"/prompt{prompt_frame}_label_map_{label_id}.png")
-
-            uni_label_map_label = uni_mask_map == label_id
-            uni_label_map_label = uni_label_map_label.type(torch.float32) * 255
-            torchvision.utils.save_image(uni_label_map_label,  eval_path+f"/prompt{prompt_frame}_label_map_{label_id}_gt.png")
-
-
-        label_map = label_map.cpu().numpy()
+        label_map = gaussians.label[alpha_id_map].cpu().numpy()
         label_map_cnt = np.unique(label_map, return_counts=True)
         label_map_cnt = dict(zip(label_map_cnt[0], label_map_cnt[1]))
         print("label_map_cnt:", label_map_cnt)
@@ -124,43 +75,13 @@ def eval(dataset : ModelParams, pipeline : PipelineParams, args):
             print("label_str:", label_str)
             mask_label_cnt = np.unique(label_map * mask, return_counts=True)
             mask_label_cnt = dict(zip(mask_label_cnt[0], mask_label_cnt[1]))
-            #print("mask_label_cnt:", mask_label_cnt)
             mask_label_cnt.pop(0, None)
             mask_label_cnt.pop(-1, None)
-            #print("mask_label_cnt:", mask_label_cnt)
-            #print(mask_label_cnt)
             valid_label = [k for k, v in mask_label_cnt.items() if v > label_map_cnt[k] * 0.5]
-            #print("valid_label:", valid_label)
             object_to_label[label_str] = valid_label
-            
-            # render the 3d object 
-            valid_label = torch.tensor(valid_label, dtype=torch.int32, device="cuda")
-            if valid_label.shape[0] == 0:
-                print("[Warning] no valid label id for label_str:", label_str)
-            render_pkg = render(view, gaussians, pipeline, background, args, label_id=valid_label)
-            torchvision.utils.save_image(render_pkg["render"],  eval_path+f"/prompt{prompt_frame}_{label_str}.png")
-
-            # save label_str gt iamge
-            label_img = view.original_image * torch.tensor(mask).to("cuda").type(torch.bool)
-            #label_img = label_img + (~torch.tensor(mask).to("cuda").type(torch.bool))
-
-            #print(label_img.shape)
-
-            torchvision.utils.save_image(label_img,  eval_path+f"/prompt{prompt_frame}_{label_str}_gt.png")
-            #print(eval_path+f"/prompt{prompt_frame}_{label_str}_gt.png")
-            #exit()
-
-            # save mask as image file
-            mask = torch.tensor(mask, dtype=torch.float32, device="cuda")
-            torchvision.utils.save_image(mask,  eval_path+f"/prompt{prompt_frame}_{label_str}_mask_gt.png")
-
-            #print()
 
         print("object_to_label: ", object_to_label)
 
-        #extract_3d_object(gaussians, scene, eval_path, object_to_label, args, background)
-        #print()
-     
         # evaluate on eval_set
         print("eval in eval_set...")
         test_cameras = scene.getTestCameras()
@@ -177,8 +98,6 @@ def eval(dataset : ModelParams, pipeline : PipelineParams, args):
             render_pkg = render(view, gaussians, pipeline, background, args)
             torchvision.utils.save_image(render_pkg["render"],  eval_path+f"/test{frame_num}.png")
 
-            #print("eval_anno:", eval_anno.keys())
-            
             for label_str, seg in eval_anno.items():
                 if label_str not in object_to_label:
                     print(f"[Warning] label_str {label_str} not in object_to_label")

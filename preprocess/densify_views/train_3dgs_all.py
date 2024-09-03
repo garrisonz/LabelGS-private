@@ -16,6 +16,9 @@ scene_names = os.listdir(dataset_path)
 if dataset_name == "lerf_ovs":
     scene_names = [scene_name for scene_name in scene_names if "label" != scene_name]
 scene_names.sort()
+
+# skip if scene_name is not a folder
+scene_names = [scene_name for scene_name in scene_names if os.path.isdir(f"{dataset_path}/{scene_name}")]
 print("scene_names:", scene_names)
 
 start_cmd = ""
@@ -28,7 +31,7 @@ iteration = 30000
 
 for scene_name in scene_names:
 
-    scene_name = "garden"
+    #scene_name = "garden"
 
 
     #start_iteration = 15000
@@ -37,4 +40,4 @@ for scene_name in scene_names:
     cmd = (f"python train.py -s dataset/{dataset_name}/{scene_name} -m output/{dataset_name}/{scene_name} {eval_cmd} --iteration {iteration} {start_cmd}")
     print(cmd)
     os.system(cmd)
-    exit()
+#    exit()

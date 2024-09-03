@@ -1,4 +1,5 @@
 import os
+# get dataset_name from command line
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("--dataset_name", type=str, required=True) # example 3d_ovs
@@ -12,14 +13,20 @@ print(dataset_path)
 scene_names = os.listdir(dataset_path)
 if dataset_name == "lerf_ovs":
     scene_names = [scene_name for scene_name in scene_names if "label" != scene_name]
-scene_names.sort()
+
 scene_names = [scene_name for scene_name in scene_names if os.path.isdir(f"{dataset_path}/{scene_name}")]
+
+
+scene_names.sort()
 print("scene_names:", scene_names)
 
 for scene_name in scene_names:
 
-    cmd = (f"python preprocess/unocclusion_mask/run.py --encoder vitl --img-path ~/w/3drecon/data/{dataset_name}/{scene_name}/images/ --outdir ~/w/3drecon/data/{dataset_name}/{scene_name}/depth/ --pred-only --grayscale")
-    print(cmd)
-    os.system(cmd)
-    #exit()
+    mask_root = f"{dataset_path}/{scene_name}/mask/video_mask_auto/"
 
+    cmd = f"python preprocess/consistent_mask/uni_mask.py --mask_root {mask_root}"
+
+    print(cmd)
+    os.system(cmd) 
+    
+    #exit()

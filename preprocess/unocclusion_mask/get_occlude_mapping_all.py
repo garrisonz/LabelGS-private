@@ -18,14 +18,15 @@ scene_names.sort()
 
 print("scene_names:", scene_names)
 
-version = 11
-mask_version = 1
+version = 1
+mask_version = 3
 
 for scene_name in scene_names:
-    if scene_names == ["sofa", "table"]:
+
+    if scene_name in ["bicycle", "bonsai"]:
         continue
 
-    cmd = (f"python utils/get_occlude_mapping.py --scene_path dataset/{dataset_name}/{scene_name} --out_dir output/{dataset_name}/auto_{scene_name}_segEval{version} --mask_version {mask_version}")
+    cmd = (f"python preprocess/unocclusion_mask/get_occlude_mapping.py --scene_path dataset/{dataset_name}/{scene_name} --out_dir output/{dataset_name}/auto_{scene_name}_segEval{version} --mask_version {mask_version}")
     print(cmd)
     os.system(cmd)
 
