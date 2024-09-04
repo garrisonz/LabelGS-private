@@ -1,0 +1,9 @@
+{
+   "exclude": [
+         "dataset",
+         "output",
+         "ckpts",
+         "checkpoints",
+         "saves"
+    ]
+}
