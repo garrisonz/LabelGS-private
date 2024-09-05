@@ -162,7 +162,7 @@ class GaussianSplattingGUI:
             dpg.add_text("frame id:", tag="frame_id")
             dpg.add_slider_float(label="Scale", default_value=1.0, min_value=0.001, max_value=1.0, tag="_Scale")
             dpg.add_button(label="training fovy", callback=reset_fovy1, user_data="Some Data")
-            dpg.add_slider_float(label="fovy", default_value=60.0, min_value=1.0, max_value=60.0, tag="_fovy")
+            dpg.add_slider_float(label="fovy", default_value=60.0, min_value=1.0, max_value=90.0, tag="_fovy")
             dpg.add_text("\n")
 
         if self.debug:
@@ -212,6 +212,7 @@ class GaussianSplattingGUI:
                 now = datetime.datetime.now()
                 self.click_time = now.strftime("%d_%H%M%S")
                 self.click_multiview_num = 0
+                os.makedirs(f"./{self.save_folder}/{self.click_time}", exist_ok=True)
 
 
         with dpg.handler_registry():
@@ -293,7 +294,7 @@ class GaussianSplattingGUI:
         img = scene_outputs["render"].permute(1, 2, 0)
 
         if self.new_click:
-            img_path = f"./{self.save_folder}/{self.click_time}_all_gua_render.png"
+            img_path = f"./{self.save_folder}/{self.click_time}/all_gua_render.png"
             save_image(img, img_path)
 
         if self.clear_edit:
@@ -313,7 +314,7 @@ class GaussianSplattingGUI:
                 mask = self.point_to_mask(self.new_click_xy, img)
                 mask_save = mask.repeat(3, 1, 1).permute(1, 2, 0)
 
-                save_path = f"./{self.save_folder}/{self.click_time}_2d_mask.png"
+                save_path = f"./{self.save_folder}/{self.click_time}/2d_mask.png"
                 save_image(mask_save, save_path)
 
                 alpha_id_map = scene_outputs["alpha_id_map"].cpu()
@@ -322,6 +323,7 @@ class GaussianSplattingGUI:
 
                 label_map = gaussians.label[alpha_id_map].cpu().numpy()
                 label_map_cnt = np.unique(label_map, return_counts=True)
+
                 label_map_cnt = dict(zip(label_map_cnt[0], label_map_cnt[1]))
 
                 mask_label_cnt = np.unique(label_map * mask.cpu().numpy(), return_counts=True)
@@ -333,6 +335,8 @@ class GaussianSplattingGUI:
                         self.label_list.append(k)
                 self.label_list = list(set(self.label_list))
 
+                print(self.label_list)
+
             if len(self.label_list) > 0:
                 labels = torch.tensor(self.label_list, device="cuda")
                 scene_outputs = render(view_camera, self.engine['scene'], self.opt, self.bg_color, label_id=labels, scaling_modifier=scale)
@@ -343,16 +347,16 @@ class GaussianSplattingGUI:
                 img = img * alpha + mask * (1 - alpha)
 
                 if self.new_click:
-                    save_path = f"./{self.save_folder}/{self.click_time}_3d_mask.png"
+                    save_path = f"./{self.save_folder}/{self.click_time}/3d_mask.png"
                     save_image(mask, save_path)
 
                     save_img = scene_outputs["render"].permute(1, 2, 0)
-                    save_path = f"./{self.save_folder}/{self.click_time}_3D_seg.png"
+                    save_path = f"./{self.save_folder}/{self.click_time}/3D_seg.png"
                     save_image(save_img, save_path)
 
         if self.new_click:
             save_img = img.clone()
-            img_path = f"./{self.save_folder}/{self.click_time}_display.png"
+            img_path = f"./{self.save_folder}/{self.click_time}/display.png"
             xy = [int(self.new_click_xy[0]), int(self.new_click_xy[1])]
             save_img[xy[1]-5:xy[1]+5, xy[0]-5:xy[0]+5] = torch.tensor([1, 0, 0], device="cuda")
             save_image(save_img, img_path)
@@ -361,13 +365,13 @@ class GaussianSplattingGUI:
             self.save_gaussian_mask_func()
 
         if self.save_flag:
-            save_path = f"./{self.save_folder}/{self.click_time}_{dpg.get_value('save_name')}_{self.click_multiview_num}.png"
+            save_path = f"./{self.save_folder}/{self.click_time}/{dpg.get_value('save_name')}_{self.click_multiview_num}.png"
             print("save:", save_path)
             save_image(img, save_path)
             self.click_multiview_num += 1
 
         if self.playing:
-            if self.frame_id < len(self.smooth_cameras) + 1:
+            if self.frame_id < len(self.smooth_cameras) - 1:
                 self.frame_id += 1
             else:
                 self.frame_id = 0
@@ -404,7 +408,6 @@ class GaussianSplattingGUI:
         print("Saved to ", mask_path)
 
 
-    @torch.no_grad()
     def point_to_mask(self, xy, image):
         image = (image.cpu().numpy()*255).astype(np.uint8)
 
@@ -433,6 +436,10 @@ def get_camera_pose(scene_path, image_height, image_width):
     cameras_intrinsic_file = os.path.join(scene_path, "sparse/0", "cameras.bin")
     cam_extrinsics = read_extrinsics_binary(cameras_extrinsic_file)
     cam_intrinsics = read_intrinsics_binary(cameras_intrinsic_file)
+
+    # cam_extrinsics sort by name
+    cam_extrinsics = dict(sorted(cam_extrinsics.items(), key=lambda x: x[1].name))
+    #print("cam_extrinsics:", cam_extrinsics)
 
     cameras = []
     for idx, key in enumerate(cam_extrinsics):

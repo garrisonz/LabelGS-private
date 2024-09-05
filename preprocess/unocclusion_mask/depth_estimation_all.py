@@ -18,7 +18,7 @@ print("scene_names:", scene_names)
 
 for scene_name in scene_names:
 
-    cmd = (f"python preprocess/unocclusion_mask/run.py --encoder vitl --img-path ~/w/3drecon/data/{dataset_name}/{scene_name}/images/ --outdir ~/w/3drecon/data/{dataset_name}/{scene_name}/depth/ --pred-only --grayscale")
+    cmd = (f"python preprocess/unocclusion_mask/depth_estimation.py --encoder vitl --img-path ~/w/3drecon/data/{dataset_name}/{scene_name}/images/ --outdir ~/w/3drecon/data/{dataset_name}/{scene_name}/depth/ --pred-only --grayscale")
     print(cmd)
     os.system(cmd)
     #exit()

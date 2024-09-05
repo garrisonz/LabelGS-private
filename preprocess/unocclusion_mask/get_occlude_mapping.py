@@ -80,7 +80,7 @@ for image_name, mask_name in tqdm(rendering_gt_mapping.items()):
 
     unique_label = np.unique(label_map)
 
-    os.makedirs(f"{out_dir}/depth/{image_name}/", exist_ok=True)
+    #os.makedirs(f"{out_dir}/depth/{image_name}/", exist_ok=True)
 
     unique_label = unique_label[unique_label != 0]
 

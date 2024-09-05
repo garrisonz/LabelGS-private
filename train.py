@@ -365,7 +365,7 @@ if __name__ == "__main__":
     parser.add_argument('--debug_from', type=int, default=-1)
     parser.add_argument('--detect_anomaly', action='store_true', default=False)
     #parser.add_argument("--test_iterations", nargs="+", type=int, default=[7_000, 30_000])
-    parser.add_argument("--save_iterations", nargs="+", type=int, default=[7_000, 10000, 15000, 15010, 20000, 30_000, 40000, 50000, 60000])
+    parser.add_argument("--save_iterations", nargs="+", type=int, default=[7_000, 10000, 15000, 20000, 30_000, 40000, 50000, 60000])
     parser.add_argument("--test_iterations", nargs="+", type=int, default=None)
     parser.add_argument("--save_image_iterations", nargs="+", type=int, default=None)
     parser.add_argument("--quiet", action="store_true")

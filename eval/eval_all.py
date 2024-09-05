@@ -16,6 +16,7 @@ print(dataset_path)
 scene_names = os.listdir(dataset_path)
 if dataset_name == "lerf_ovs":
     scene_names = [scene_name for scene_name in scene_names if "label" != scene_name]
+scene_names = [scene_name for scene_name in scene_names if os.path.isdir(f"{dataset_path}/{scene_name}")]
 scene_names.sort()
 print("scene_names:", scene_names)
 
