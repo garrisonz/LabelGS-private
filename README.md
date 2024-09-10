@@ -66,7 +66,17 @@ Yupeng Zhang, et al. 2024
   Python train_all.py  --dataset_name 3d_ovs
   ```
 
-## 4. Evaluation
+## 4. GUI
+
+```
+python labelgs_gui.py -m {model_output_path} -s {scene_path}
+```
+
+    例如：python labelgs_gui.py -m output/3d_ovs/auto_bed_segEval3 -s dataset/3d_ovs/bed
+
+
+
+## 5. Evaluation
 
 - Evaluation for PSNR and mIoU
   
