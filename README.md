@@ -28,12 +28,12 @@ Yupeng Zhang, et al. 2024
 
 ### 2.2 Cross-View Consistent Mask
 
-- Build a python environment according DEVA
+- Build a python environment according [DEVA](https://github.com/hkchengrex/Tracking-Anything-with-DEVA)
 
-- generate cross-view consistent masks from DEVA
+- generate cross-view consistent masks from DEVA in DEVA env
   
   ```jsx
-  python preprocess/consistent_mask/demo_automatic_all.py --dataset_name 3d_ovs
+  (deva) python preprocess/consistent_mask/demo_automatic_all.py --dataset_name 3d_ovs
   ```
 
 - Mapping RGB mask to gray mask
@@ -44,12 +44,12 @@ Yupeng Zhang, et al. 2024
 
 ### 2.3 Unocclusion Mask
 
-- Build a python env for DepthAnythingV2
+- Build a python env for [DepthAnythingV2](https://github.com/DepthAnything/Depth-Anything-V2)
 
-- Generate depth map
+- Generate depth map in DepthAnythingV2 env
   
   ```jsx
-  python preprocess/unocclusion_mask/run_all.py --dataset_name 3d_ovs
+  (depth_anything_v2) python preprocess/unocclusion_mask/run_all.py --dataset_name 3d_ovs
   ```
 
 - Obtain occlusion relationship
