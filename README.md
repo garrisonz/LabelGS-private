@@ -2,7 +2,7 @@
 
 Yupeng Zhang, et al. 2024
 
-\| Webpage(TBA) \| Full Paper(TBA) \| Video(TBA) \|
+\| Webpage(TBA) \| Full Paper(TBA) \|
 
 ----
 
