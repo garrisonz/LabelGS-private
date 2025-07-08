@@ -79,12 +79,11 @@ https://github.com/user-attachments/assets/ebd8f2d8-0f27-49ee-a67c-c11bfb454479
 
 Segmentint multiple objects simultaneously.
 
-https://github.com/user-attachments/assets/b5ff5558-f3a1-4ae2-b8d7-4c611372f3a9
+https://github.com/user-attachments/assets/f557a4cf-7b4f-4254-9f21-ec0119161a7b
 
 Segmenting the occluded object and showing the occluded region.
 
-https://github.com/user-attachments/assets/f557a4cf-7b4f-4254-9f21-ec0119161a7b
-
+https://github.com/user-attachments/assets/b5ff5558-f3a1-4ae2-b8d7-4c611372f3a9
 
 
 ## 5. Evaluation
